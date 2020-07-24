@@ -45,13 +45,26 @@ pkg_check_modules (SERVICE_DEPS REQUIRED
                    glib-2.0>=2.36
                    gio-unix-2.0>=2.36
                    libical>=0.48
-                   libecal-2.0>=3.16
                    libedataserver-1.2>=3.5
                    gstreamer-1.0>=1.2
                    libnotify>=0.7.6
                    properties-cpp>=0.0.1
                    libaccounts-glib>=1.18)
 include_directories (SYSTEM ${SERVICE_DEPS_INCLUDE_DIRS})
+
+pkg_check_modules(ECAL20
+                  libecal-2.0>=3.16)
+if(ECAL20_FOUND)
+    add_definitions( -DHAS_ECAL20 )
+else()
+    pkg_check_modules(ECAL12
+                      libecal-1.2>=3.16)
+    if(ECAL12_FOUND)
+        add_definitions( -DHAS_ECAL12 )
+    else()
+       message(SEND_ERROR "Neither libecal-2.0 nor libecal-1.2 were found - make sure to provide either one")
+    endif()
+endif()
 
 set(URL_DISPATCHER_1_REQUIRED_VERSION 1)
 pkg_check_modules(URLDISPATCHER
